@@ -10,6 +10,8 @@ def principal():
 
         if op == 1:
             inicio = inicio_sesion()
+            if inicio == None:
+                pass
             while (inicio != None):
                 menu_dispositivos()
                 op1 = int(input("Ingrese una opcion valida: "))
