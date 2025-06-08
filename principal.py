@@ -16,10 +16,16 @@ def principal():
                 print("Bienvenido, administrador.")
                 op_admin = "-1"
                 while op_admin != "0" :
-                   menu_admin()
-                op_admin = input("Ingrese una opcion valida: ")
+                    menu_admin()
+                    op_admin = input("Ingrese una opcion valida: ")
+                    if op_admin == "1": 
+                        ver_usuarios()
+                    elif op_admin =="2":
+                        eliminar_usuarios() 
+
+
             op1 = -1
-            while op != 0:
+            while op1 != 0:
                 menu_dispositivos()
                 op1 = input("Ingrese una opcion valida: ")
                 if op1 == "1":

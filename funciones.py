@@ -54,6 +54,21 @@ def registro():
 
     return usuario_nuevo
 
+def ver_usuarios():
+    print("\nUsuarios registrados:")
+    for usuario in usuarios:
+        print(f"- {usuario}")
+
+def eliminar_usuarios():
+    print("\nUsuarios registrados:")
+    for usuario in usuarios:
+        print(f"- {usuario}")
+    usuario_a_eliminar = input("Ingrese el nombre de usuario a eliminar: ")
+    if(usuario_a_eliminar in usuarios) and (usuario_a_eliminar != "admin"):
+        del usuarios[usuario_a_eliminar]
+        print(f"Usuario '{usuario_a_eliminar}' eliminado")
+
+
 def menu_inicio():
     print("1)Inicie sesion")
     print("2)Registrese")
