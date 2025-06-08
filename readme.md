@@ -1,5 +1,5 @@
 # Evidencia3_ISPC
-Trabajo grupal correspondiente a la evidencia 2 del módulo "Programador", en la Tecnicatura Superior en Desarrollo de Software, del ISPC.
+Trabajo grupal correspondiente a la evidencia 3 del módulo "Programador", en la Tecnicatura Superior en Desarrollo de Software, del ISPC.
 
 Participantes:
 
