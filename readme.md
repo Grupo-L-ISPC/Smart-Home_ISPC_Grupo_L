@@ -5,7 +5,7 @@ Participantes:
 
 Mauro Mendieta
 Maximiliano Marcos
-Fernanda Velez
+Rodrigo Rufail
 Salma Ceballos
 Sheila Abigail Diaz
-Rodrigo Rufail
+Fernanda Velez
