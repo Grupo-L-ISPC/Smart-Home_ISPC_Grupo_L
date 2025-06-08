@@ -12,7 +12,10 @@ def principal():
             inicio = inicio_sesion()
             if inicio == None:
                 pass
-            while (inicio != None):
+            if usuarios[inicio]["es_admin"]:
+                print("Bienvenido, administrador.")
+                menu_admin()
+            while (inicio != None) and (inicio != "admin"):
                 menu_dispositivos()
                 op1 = int(input("Ingrese una opcion valida: "))
                 if op1 == 1:

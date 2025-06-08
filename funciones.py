@@ -1,9 +1,15 @@
+usuarios = usuarios = {
+    "admin": {
+        "contraseña": "admin123",
+        "es_admin": True
+    }  
+}
 
-usuarios = {}
-    
+
 
 def inicio_sesion():
     usuario = input("ingrese su usuario: ")
+        
     cont = 0
     while usuario.strip() == "":
         usuario = input("Vuelva a ingresar su usuario, no puede dejar en blanco: ")
@@ -23,7 +29,7 @@ def inicio_sesion():
 
     
     contraseña = input("Ingrese su contraseña: ")
-    while contraseña != usuarios[usuario]:
+    while contraseña != usuarios[usuario]["contraseña"]:
         contraseña = input("Contraseña incorrecta. Intente de nuevo: ")
     
     print("¡Inicio de sesión exitoso!")
@@ -37,14 +43,27 @@ def registro():
     if usuario_nuevo in usuarios:
         print("El usuario ya existe.")
     else:
+
         contraseña_nueva = input("Ingrese una contraseña: ")
-        usuarios[usuario_nuevo] = contraseña_nueva
+        while contraseña_nueva == "":
+            contraseña_nueva = input("La contraseña no puede estar vacía. Intente de nuevo: ").strip()
+        usuarios[usuario_nuevo] = {
+        "contraseña": contraseña_nueva,
+        "es_admin": False
+        }
 
     return usuario_nuevo
 
 def menu_inicio():
     print("1)Inicie sesion")
     print("2)Registrese")
+    print("0)Salir")
+
+
+def menu_admin():
+    print("Bienvenido Administrador")
+    print("1)Ver todos los usuarios.")
+    print("2)Eliminar usuarios")
     print("0)Salir")
 
 
