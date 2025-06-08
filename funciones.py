@@ -5,6 +5,7 @@ usuarios = {}
 def inicio_sesion():
     usuario = input("ingrese su usuario: ")
     cont = 0
+    #flag = False
     while usuario.strip() == "":
         usuario = input("Vuelva a ingresar su usuario, no puede dejar en blanco: ")
     
@@ -17,9 +18,12 @@ def inicio_sesion():
                 confirmacion = input("Respuesta inválida. ¿Desea registrarse? (s/n): ").lower()
             if confirmacion == "s":
                 registro()
+                usuario = input("Registro exitoso. Ingrese su usuario: ")
+                #flag = True
             else:
                 return None
-            
+
+    
     contraseña = input("Ingrese su contraseña: ")
     while contraseña != usuarios[usuario]:
         contraseña = input("Contraseña incorrecta. Intente de nuevo: ")
