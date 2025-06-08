@@ -8,7 +8,7 @@ def principal():
         menu_inicio()
         op = input("Ingrese una opcion valida: ")
             
-        if op == 1:
+        if op == "1":
             inicio = inicio_sesion()
             if inicio is None:
                 continue
@@ -18,15 +18,19 @@ def principal():
                 while op_admin != "0" :
                    menu_admin()
                 op_admin = input("Ingrese una opcion valida: ")
-                if op_admin == "1":
+            op1 = -1
+            while op != 0:
+                menu_dispositivos()
+                op1 = input("Ingrese una opcion valida: ")
+                if op1 == "1":
                     agregar_dispositivos()
-                elif op_admin == 2:
+                elif op1 == "2":
                     ver_dispositivos()
-                elif op_admin == 3:
+                elif op1 == "3":
                     eliminar_dispositivos()
-                elif op_admin == 4:
+                elif op1 == "4":
                     modificar_dispositivos()
-                elif op_admin == 5:
+                elif op1 == "5":
                     menu_automatizacion()
                     op2 = int(input("Ingrese una opcion valida: "))
                     if op2 == 1:
@@ -35,11 +39,11 @@ def principal():
                 elif op_admin == 0:
                     break
            
-        elif op == 2:
+        elif op == "2":
             reg = registro()
             print("Usuario creado exitosamente", reg)
-        elif op == 0:
+        elif op == "0":
             print("Adios")
-# salma
+
 
 principal()
