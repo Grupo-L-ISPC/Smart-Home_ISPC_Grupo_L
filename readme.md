@@ -4,8 +4,8 @@ Trabajo grupal correspondiente a la evidencia 3 del módulo "Programador", en la
 Participantes:
 
 Mauro Mendieta
-Rodrigo Rufail
+Maximiliano Marcos
 Fernanda Velez
 Salma Ceballos
 Sheila Abigail Diaz
-Maximiliano Marcos
+Rodrigo Rufail
