@@ -13,7 +13,6 @@ def principal():
             if inicio is None:
                 continue
             if usuarios[inicio]["es_admin"]:
-                print("Bienvenido, administrador.")
                 op_admin = "-1"
                 while op_admin != "0" :
                     menu_admin()
@@ -21,7 +20,9 @@ def principal():
                     if op_admin == "1": 
                         ver_usuarios()
                     elif op_admin =="2":
-                        eliminar_usuarios() 
+                        eliminar_usuarios()
+                    elif op_admin == "0":
+                        break
 
 
             op1 = -1
@@ -37,12 +38,16 @@ def principal():
                 elif op1 == "4":
                     modificar_dispositivos()
                 elif op1 == "5":
+                    op2 = -1
                     menu_automatizacion()
-                    op2 = int(input("Ingrese una opcion valida: "))
-                    if op2 == 1:
-                        modo_ahorro()
-
-                elif op_admin == 0:
+                    while op2 != "0":
+                        op2 = input("Ingrese una opcion valida: ")
+                        if op2 == "1":
+                            modo_ahorro()
+                        elif op2 == "0":
+                            print("Saliendo del menu de automatizaciones...")
+                elif op1 == "0":
+                    print("Saliendo del menu de dispositivos...")
                     break
            
         elif op == "2":
@@ -50,6 +55,7 @@ def principal():
             print("Usuario creado exitosamente", reg)
         elif op == "0":
             print("Adios")
+            break
 
-
-principal()
+if __name__ == "__main__":
+    principal()

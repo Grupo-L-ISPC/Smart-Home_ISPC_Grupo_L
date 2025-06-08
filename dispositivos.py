@@ -63,6 +63,7 @@ def menu_dispositivos():
 
 def menu_automatizacion():
     print("1) Modo de ahorro")
+    print("0) Salir")
 
 
 def modo_ahorro():
