@@ -58,6 +58,7 @@ def menu_dispositivos():
     print("3) Eliminar Dispositivos")
     print("4) Modificar Dispositivos")
     print("5) Automatizaciones")
+    print("6) Mostrar datos personales")
     print("0) Salir")
 
 

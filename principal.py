@@ -19,8 +19,10 @@ def principal():
                     op_admin = input("Ingrese una opcion valida: ")
                     if op_admin == "1": 
                         ver_usuarios()
-                    elif op_admin =="2":
+                    elif op_admin == "2":
                         eliminar_usuarios()
+                    elif op_admin == "3":
+                        modificar_rol()
                     elif op_admin == "0":
                         break
 
@@ -46,6 +48,8 @@ def principal():
                             modo_ahorro()
                         elif op2 == "0":
                             print("Saliendo del menu de automatizaciones...")
+                elif op1 == "6":
+                    ver_datos_personales(inicio)
                 elif op1 == "0":
                     print("Saliendo del menu de dispositivos...")
                     break
