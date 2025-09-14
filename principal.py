@@ -1,5 +1,6 @@
-from funciones import *
+from usuarios import *
 from dispositivos import *
+from menus import *
 
 def principal():
     op = - 1

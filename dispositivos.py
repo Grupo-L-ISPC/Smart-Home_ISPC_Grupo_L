@@ -52,19 +52,7 @@ def modificar_dispositivos():
     dispositivos[nombre_dispositivo]["estado"] = estado
 
 
-def menu_dispositivos():
-    print("1) Agregar Dispositivos")
-    print("2) Ver dispostivos")
-    print("3) Eliminar Dispositivos")
-    print("4) Modificar Dispositivos")
-    print("5) Automatizaciones")
-    print("6) Mostrar datos personales")
-    print("0) Salir")
 
-
-def menu_automatizacion():
-    print("1) Modo de ahorro")
-    print("0) Salir")
 
 
 def modo_ahorro():
@@ -73,9 +61,6 @@ def modo_ahorro():
         if not datos["esencial"]:
             dispositivos[nombre]["estado"] = 0
             print(f"→ {nombre} no esencial puesto en estado inactivo.")
-
-
-
 
 
 
