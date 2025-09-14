@@ -57,7 +57,7 @@ def principal():
            
         elif op == "2":
             reg = registro()
-            print("Usuario creado exitosamente", reg)
+            print("✅ Usuario " + reg + " fue creado exitosamente.")
         elif op == "0":
             print("Adios")
             break

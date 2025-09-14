@@ -101,17 +101,7 @@ def modificar_rol():
 
 
 
-def menu_inicio():
-    print("1)Inicie sesion")
-    print("2)Registrese")
-    print("0)Salir")
 
 
-def menu_admin():
-    print("Bienvenido Administrador")
-    print("1)Ver todos los usuarios.")
-    print("2)Eliminar usuarios")
-    print("3)Modificar rol de algun usuario")
-    print("0)Salir")
 
 

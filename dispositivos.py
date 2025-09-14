@@ -19,15 +19,31 @@ def agregar_dispositivos():
         "estado": estado,
         "esencial": esencial == "s"
     }
+        print("✅ Dispostivo '" + nombre_dispositivo + "' agregado exitosamente.")
+
         
     
         
 def ver_dispositivos():
-    print(dispositivos)
+    if not dispositivos:
+        print("No hay dispositivos registrados")
+    else:
+        for nombre, datos in dispositivos.items():
+            if datos["estado"] == 1:
+                estado = "Encendido"
+            else:
+                estado = "Apagado"
+
+            if datos["esencial"]:
+                esencial = "Sí"
+            else:
+                esencial = "No"
+                
+            print(f"- {nombre} | Estado: {estado} | Esencial: {esencial}")
 
 
 def eliminar_dispositivos():
-    print(dispositivos)
+    ver_dispositivos()
     borrar = input("Escriba el nombre del dispositivo a eliminar: ")
     while borrar.strip() == "":
         borrar = input("Vuelva a ingresar un dispositivo: ")
@@ -39,7 +55,7 @@ def eliminar_dispositivos():
 
 
 def modificar_dispositivos():
-    print(dispositivos)
+    ver_dispositivos()
     nombre_dispositivo = input("Escriba el nombre del dispositivo a modificar: ")
     while nombre_dispositivo.strip() == "":
         nombre_dispositivo = input("Vuelva a ingresar un dispositivo: ")
@@ -55,12 +71,6 @@ def modificar_dispositivos():
 
 
 
-def modo_ahorro():
-    print("\nActivando modo ahorro...")
-    for nombre, datos in dispositivos.items():
-        if not datos["esencial"]:
-            dispositivos[nombre]["estado"] = 0
-            print(f"→ {nombre} no esencial puesto en estado inactivo.")
 
 
 
