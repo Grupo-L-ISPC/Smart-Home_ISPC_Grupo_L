@@ -8,7 +8,7 @@ automatizacion_dispositivo: Relación entre automatizaciones y dispositivos
 
 Pasos para usar
 
-1. Abrir cualquier ejecutador de sql scripts(https://sqlfiddle.com/; https://www.mycompiler.io/es/new/mysql)
+1. Abrir cualquier ejecutador de sql scripts online (https://sqlfiddle.com/; https://www.mycompiler.io/es/new/mysql)
 
 2. Importar y ejecutar Script 1 (Creación de tablas), si no deja importar copiar directamente.
 
