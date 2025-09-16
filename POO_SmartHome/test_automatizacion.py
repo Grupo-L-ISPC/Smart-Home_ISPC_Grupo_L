@@ -1,5 +1,5 @@
 import pytest
-from poo_smart_home.automatizacion import Automatizacion
+from automatizacion  import Automatizacion
 
 def test_crear_automatizacion():
     a = Automatizacion("Encender luces", "horario")
