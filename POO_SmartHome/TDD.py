@@ -1,6 +1,6 @@
 import unittest
-from poo_smart_home.usuario import Usuario
-from poo_smart_home.dispositivo import Dispositivo
+from POO_SmartHome.usuario import Usuario
+from POO_SmartHome.dispositivo import Dispositivo
 
 class TestUsuarioDispositivo(unittest.TestCase):
     def test_usuario_sesion_y_cambio(self):
