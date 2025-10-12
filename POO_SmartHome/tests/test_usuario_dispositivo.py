@@ -1,6 +1,6 @@
 import pytest
-from usuario import Usuario
-from dispositivo import Dispositivo
+from POO_SmartHome.dominio.usuario import Usuario
+from POO_SmartHome.dominio.dispositivo import Dispositivo
 
 def test_usuario_sesion_y_cambio():
     u = Usuario("Ana", "1234")
