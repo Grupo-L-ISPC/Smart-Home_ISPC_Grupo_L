@@ -9,6 +9,13 @@ def test_usuario_sesion_y_cambio():
     u.cambiar_contraseña("abcd")
     assert u.iniciar_sesion("Ana", "abcd")
 
+def test_usuario_ver_datos():
+    u = Usuario("Mauro", "clave", es_admin=True)
+    datos = u.ver_datos()
+    assert datos["nombre"] == "Mauro"
+    assert datos["es_admin"] is True
+
+
 def test_dispositivo_encender_apagar():
     d = Dispositivo("Luz sala")
     assert d.revisar_estado() == "apagado"
