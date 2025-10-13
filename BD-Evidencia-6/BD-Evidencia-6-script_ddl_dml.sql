@@ -2,10 +2,6 @@
 -- SISTEMA SMART HOME
 -- CREACIÓN DE LA BASE DE DATOS Y TABLAS
 
--- Crear base de datos
-CREATE DATABASE IF NOT EXISTS smarthome;
-USE smarthome;
-
 -- Crear tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -135,7 +131,7 @@ SELECT
     CONCAT(ROUND((SELECT COUNT(*) FROM dispositivos WHERE estado = 0) * 100.0 / 
           (SELECT COUNT(*) FROM dispositivos), 1), '%');
 
--- 🔗 CONSULTA MULTITABLA 3: Dispositivos no esenciales encendidos
+--  CONSULTA MULTITABLA 3: Dispositivos no esenciales encendidos
 -- Propósito: Identificar oportunidades de ahorro energético
 -- Justificación: Para el modo de ahorro, apagar estos dispositivos reduce consumo
 SELECT '=== DISPOSITIVOS NO ESENCIALES ENCENDIDOS (OPORTUNIDAD DE AHORRO) ===' as '';
@@ -145,7 +141,7 @@ SELECT d.nombre,
 FROM dispositivos d
 WHERE d.es_esencial = FALSE AND d.estado = 1;
 
--- 🔗 CONSULTA MULTITABLA 4: Análisis de eficiencia energética
+--  CONSULTA MULTITABLA 4: Análisis de eficiencia energética
 -- Propósito: Reporte de eficiencia para toma de decisiones
 -- Justificación: Los administradores necesitan métricas de eficiencia
 SELECT '=== ANÁLISIS DE EFICIENCIA ENERGÉTICA ===' as '';
@@ -164,10 +160,10 @@ SELECT
 FROM dispositivos WHERE es_esencial = FALSE;
 
 -- =============================================
--- 🔍 4. SUBCONSULTAS (2 subconsultas útiles)
+-- 4. SUBCONSULTAS (2 subconsultas útiles)
 -- =============================================
 
--- 🔍 SUBCONSULTA 1: Dispositivos con estado superior al promedio
+-- SUBCONSULTA 1: Dispositivos con estado superior al promedio
 -- Propósito: Identificar dispositivos que consumen más energía de lo normal
 -- Justificación: Para optimizar el consumo energético del hogar
 SELECT '=== DISPOSITIVOS CON ESTADO SUPERIOR AL PROMEDIO ===' as '';
@@ -183,7 +179,7 @@ WHERE estado > (
 AND es_esencial = FALSE
 ORDER BY estado DESC;
 
--- 🔍 SUBCONSULTA 2: Dispositivos esenciales que siempre deben estar encendidos
+-- SUBCONSULTA 2: Dispositivos esenciales que siempre deben estar encendidos
 -- Propósito: Verificar dispositivos críticos que deberían estar activos
 -- Justificación: Seguridad del hogar - algunos dispositivos son críticos
 SELECT '=== DISPOSITIVOS CRÍTICOS QUE DEBEN ESTAR ACTIVOS ===' as '';
@@ -199,7 +195,7 @@ AND nombre IN (
 );
 
 -- =============================================
--- 🎯 CONSULTA EXTRA: Reporte ejecutivo consolidado
+-- CONSULTA EXTRA: Reporte ejecutivo consolidado
 -- =============================================
 
 SELECT '===  REPORTE EJECUTIVO - SISTEMA SMART HOME ===' as '';
