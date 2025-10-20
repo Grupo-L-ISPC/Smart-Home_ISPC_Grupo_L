@@ -13,12 +13,13 @@ def menu_principal():
     print("2. Registrarse")
     print("0. Salir")
 
-def menu_usuario_estandar(usuario_actual, usuario_dao, dispositivo_dao):
+def menu_usuario_estandar(usuario_actual, usuario_dao, dispositivo_dao, relacion_dao):  
     """Menú para usuarios estándar - Ahora con gestión completa de dispositivos"""
     while True:
         print(f"\n--- Bienvenido {usuario_actual.nombre} ---")
         print("1. Ver mis datos")
         print("2. Gestionar dispositivos")
+        print("3. Ver mis dispositivos asignados")
         print("0. Cerrar sesión")
         
         opcion = input("Seleccione una opción: ")
@@ -30,7 +31,10 @@ def menu_usuario_estandar(usuario_actual, usuario_dao, dispositivo_dao):
             print(f"Rol: {'Administrador' if datos['es_admin'] else 'Usuario estándar'}")
         
         elif opcion == "2":
-            gestionar_dispositivos(dispositivo_dao)
+            gestionar_dispositivos(dispositivo_dao, relacion_dao, usuario_actual, usuario_dao) 
+        
+        elif opcion == "3":  # Opcion nueva, usa relacion dao 
+            ver_mis_dispositivos(usuario_actual, relacion_dao, usuario_dao)
         
         elif opcion == "0":
             print("Sesión cerrada correctamente")
@@ -38,27 +42,30 @@ def menu_usuario_estandar(usuario_actual, usuario_dao, dispositivo_dao):
         else:
             print("❌ Opción inválida")
 
-def menu_admin(usuario_actual, usuario_dao, dispositivo_dao):
+def menu_admin(usuario_actual, usuario_dao, dispositivo_dao, relacion_dao):  
     """Menú para administradores"""
     while True:
         print(f"\n--- Panel Administrador ---")
         print("1. Gestionar dispositivos")
-        print("2. Gestionar usuarios")
+        print("2. Gestionar usuarios") 
+        print("3. Ver mis dispositivos asignados")  
         print("0. Volver")
         
         opcion = input("Seleccione una opción: ")
         
         if opcion == "1":
-            gestionar_dispositivos(dispositivo_dao)
+            gestionar_dispositivos(dispositivo_dao, relacion_dao, usuario_actual, usuario_dao)
         elif opcion == "2":
             gestionar_usuarios(usuario_dao)
+        elif opcion == "3": 
+            ver_mis_dispositivos(usuario_actual, relacion_dao, usuario_dao)
         elif opcion == "0":
             break
         else:
             print("❌ Opción inválida")
 
-def gestionar_dispositivos(dispositivo_dao):
-    """Gestión completa de dispositivos - Accesible para todos los usuarios"""
+def gestionar_dispositivos(dispositivo_dao, relacion_dao=None, usuario_actual=None, usuario_dao=None):
+    """Gestión completa de dispositivos"""
     while True:
         print("\n--- GESTIÓN DE DISPOSITIVOS ---")
         print("1. Ver todos los dispositivos")
@@ -72,7 +79,7 @@ def gestionar_dispositivos(dispositivo_dao):
         if opcion == "1":
             ver_dispositivos(dispositivo_dao)
         elif opcion == "2":
-            agregar_dispositivo(dispositivo_dao)
+            agregar_dispositivo(dispositivo_dao, relacion_dao, usuario_actual, usuario_dao)  # ← Pasar parámetros extras
         elif opcion == "3":
             eliminar_dispositivo(dispositivo_dao)
         elif opcion == "4":
@@ -114,8 +121,8 @@ def ver_mis_dispositivos(usuario_actual, relacion_dao, usuario_dao):
     else:
         print("❌ Error obteniendo datos del usuario")
 
-def agregar_dispositivo(dispositivo_dao):
-    """Agregar nuevo dispositivo"""
+def agregar_dispositivo(dispositivo_dao, relacion_dao=None, usuario_actual=None, usuario_dao=None):
+    """Agregar nuevo dispositivo Y asignarlo al usuario actual"""
     print("\n--- AGREGAR DISPOSITIVO ---")
     nombre = input("Nombre del dispositivo: ").strip()
     
@@ -123,7 +130,7 @@ def agregar_dispositivo(dispositivo_dao):
         print("❌ El nombre no puede estar vacío")
         return
     
-    # CAMBIO: Verificar existencia con tupla
+    # Verificar existencia con tupla
     existente = dispositivo_dao.obtener_por_nombre(nombre)
     if existente:
         print("❌ El dispositivo ya existe")
@@ -143,11 +150,26 @@ def agregar_dispositivo(dispositivo_dao):
         nuevo_dispositivo = Dispositivo(nombre, es_esencial)
         if dispositivo_dao.guardar(nuevo_dispositivo):
             print("✅ Dispositivo agregado exitosamente")
+            
+            # ✅ NUEVO: Asignar automáticamente al usuario actual
+            if relacion_dao and usuario_actual and usuario_dao:
+                usuario_id = usuario_dao.obtener_id_por_nombre(usuario_actual.nombre)
+                dispositivo_id = dispositivo_dao.obtener_id_por_nombre(nombre)
+                
+                if usuario_id and dispositivo_id:
+                    if relacion_dao.asignar_dispositivo_usuario(usuario_id, dispositivo_id):
+                        print("✅ Dispositivo asignado automáticamente a tu usuario")
+                    else:
+                        print("⚠️ Dispositivo agregado pero no se pudo asignar automáticamente")
+                else:
+                    print("⚠️ Dispositivo agregado pero no se pudo obtener IDs para asignación")
+            else:
+                print("⚠️ Dispositivo agregado (requiere asignación manual por admin)")
+                
         else:
             print("❌ Error al agregar dispositivo")
     except Exception as e:
         print(f"❌ Error al crear dispositivo: {e}")
-
 def eliminar_dispositivo(dispositivo_dao):
     """Eliminar dispositivo existente"""
     print("\n--- ELIMINAR DISPOSITIVO ---")
