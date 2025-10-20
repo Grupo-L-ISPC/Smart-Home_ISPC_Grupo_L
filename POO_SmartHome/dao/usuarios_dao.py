@@ -111,3 +111,21 @@ class UsuarioDAO:
         finally:
             if cursor:
                 cursor.close()
+
+    def obtener_id_por_nombre(self, nombre: str) -> int:
+        """Obtiene el ID de un usuario por su nombre"""
+        cursor = None
+        try:
+            cursor = self.conexion.cursor()
+            cursor.execute("SELECT id FROM usuarios WHERE nombre = %s", (nombre,))
+            fila = cursor.fetchone()
+            return fila[0] if fila else None
+        except mysql.connector.DataError as e:
+            print(f"❌ Error de datos: {e}")
+            return None
+        except mysql.connector.OperationalError as e:
+            print(f"❌ Error operacional: {e}")
+            return None
+        finally:
+            if cursor:
+                cursor.close()

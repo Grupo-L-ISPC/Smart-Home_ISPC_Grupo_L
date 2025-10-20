@@ -1,6 +1,9 @@
+-- SISTEMA SMART HOME - BASE DE DATOS RELACIONAL
+-- CON TABLAS RELACIONALES Y CONSULTAS MULTITABLA REALES
 
--- SISTEMA SMART HOME
--- CREACIÓN DE LA BASE DE DATOS Y TABLAS
+-- =============================================
+-- 1. CREACIÓN DE TABLAS (INCLUYENDO TABLA RELACIONAL)
+-- =============================================
 
 -- Crear tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -18,11 +21,22 @@ CREATE TABLE IF NOT EXISTS dispositivos (
     es_esencial BOOLEAN DEFAULT FALSE
 );
 
+-- Crear tabla relacional usuario_dispositivo (NUEVA - CLAVE PARA SER RELACIONAL)
+CREATE TABLE IF NOT EXISTS usuario_dispositivo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    dispositivo_id INT NOT NULL,
+    fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (dispositivo_id) REFERENCES dispositivos(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_usuario_dispositivo (usuario_id, dispositivo_id)
+);
+
 -- Mostrar confirmación
-SELECT '✅ Base de datos y tablas creadas exitosamente' as '';
+SELECT 'Base de datos relacional y tablas creadas exitosamente' as '';
 
 -- =============================================
--- 1. INSERCIÓN DE DATOS INICIALES 
+-- 2. INSERCIÓN DE DATOS INICIALES 
 -- =============================================
 
 -- TABLA USUARIOS (12 inserts)
@@ -69,9 +83,70 @@ INSERT IGNORE INTO dispositivos (nombre, estado, es_esencial) VALUES
 SELECT '✅ 12 dispositivos insertados' as '';
 SELECT COUNT(*) as total_dispositivos FROM dispositivos;
 
+-- TABLA RELACIONAL usuario_dispositivo (Asignaciones entre usuarios y dispositivos)
+INSERT IGNORE INTO usuario_dispositivo (usuario_id, dispositivo_id) VALUES
+-- Usuario admin tiene todos los dispositivos
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12),
+-- Otros usuarios tienen dispositivos específicos
+(2, 1), (2, 2), (2, 6), (2, 9),
+(3, 3), (3, 4), (3, 7),
+(4, 5), (4, 8), (4, 10),
+(5, 6), (5, 11), (5, 12);
 
--- 2. CONSULTAS SIMPLES POR TABLA
+-- Mostrar relaciones insertadas
+SELECT '✅ Relaciones usuario-dispositivo insertadas' as '';
+SELECT COUNT(*) as total_relaciones FROM usuario_dispositivo;
 
+-- =============================================
+-- 3. CONSULTAS MULTITABLA REALES CON JOIN (4 CONSULTAS)
+-- =============================================
+
+-- CONSULTA MULTITABLA 1: Usuarios con sus dispositivos asignados (JOIN entre 3 tablas)
+-- ESTA ES UNA CONSULTA MULTITABLA REAL CON JOIN
+SELECT '=== CONSULTA MULTITABLA 1: USUARIOS Y SUS DISPOSITIVOS (JOIN REAL) ===' as '';
+SELECT u.nombre as Usuario, d.nombre as Dispositivo, 
+       CASE WHEN d.estado = 1 THEN '🟢 Encendido' ELSE '🔴 Apagado' END as Estado,
+       ud.fecha_asignacion as 'Fecha Asignación'
+FROM usuario_dispositivo ud
+JOIN usuarios u ON ud.usuario_id = u.id
+JOIN dispositivos d ON ud.dispositivo_id = d.id
+ORDER BY u.nombre, d.nombre;
+
+-- CONSULTA MULTITABLA 2: Dispositivos y los usuarios que los tienen (JOIN REAL)
+-- ESTA ES UNA CONSULTA MULTITABLA REAL CON JOIN
+SELECT '=== CONSULTA MULTITABLA 2: DISPOSITIVOS Y SUS USUARIOS (JOIN REAL) ===' as '';
+SELECT d.nombre as Dispositivo, 
+       COUNT(ud.usuario_id) as 'Total Usuarios',
+       GROUP_CONCAT(u.nombre) as Usuarios
+FROM dispositivos d
+LEFT JOIN usuario_dispositivo ud ON d.id = ud.dispositivo_id
+LEFT JOIN usuarios u ON ud.usuario_id = u.id
+GROUP BY d.nombre
+ORDER BY COUNT(ud.usuario_id) DESC;
+
+-- CONSULTA MULTITABLA 3: Usuarios y cantidad de dispositivos que tienen (JOIN REAL)
+-- ESTA ES UNA CONSULTA MULTITABLA REAL CON JOIN
+SELECT '=== CONSULTA MULTITABLA 3: USUARIOS Y CANTIDAD DE DISPOSITIVOS (JOIN REAL) ===' as '';
+SELECT u.nombre as Usuario, 
+       COUNT(ud.dispositivo_id) as 'Total Dispositivos',
+       CASE WHEN u.es_admin = 1 THEN '👑 Administrador' ELSE '👤 Usuario' END as Rol
+FROM usuarios u
+LEFT JOIN usuario_dispositivo ud ON u.id = ud.usuario_id
+GROUP BY u.nombre, u.es_admin
+ORDER BY COUNT(ud.dispositivo_id) DESC;
+
+-- CONSULTA MULTITABLA 4: Dispositivos no asignados a ningún usuario (JOIN REAL)
+-- ESTA ES UNA CONSULTA MULTITABLA REAL CON JOIN
+SELECT '=== CONSULTA MULTITABLA 4: DISPOSITIVOS SIN ASIGNAR (JOIN REAL) ===' as '';
+SELECT d.nombre as 'Dispositivos Sin Asignar',
+       CASE WHEN d.estado = 1 THEN '🟢 Encendido' ELSE '🔴 Apagado' END as Estado
+FROM dispositivos d
+LEFT JOIN usuario_dispositivo ud ON d.id = ud.dispositivo_id
+WHERE ud.id IS NULL;
+
+-- =============================================
+-- 4. CONSULTAS SIMPLES POR TABLA (2 CONSULTAS)
+-- =============================================
 
 -- CONSULTA 1: Lista todos los usuarios
 SELECT '=== LISTA COMPLETA DE USUARIOS ===' as '';
@@ -88,84 +163,11 @@ SELECT id, nombre,
 FROM dispositivos
 ORDER BY es_esencial DESC, estado DESC, nombre;
 
-
--- 3. CONSULTAS MULTITABLA (4 consultas útiles)
-
--- CONSULTA MULTITABLA 1: Dispositivos esenciales que están apagados
--- Propósito: Identificar dispositivos críticos que necesitan atención
--- Justificación: Para el modo de ahorro energético, es importante saber
--- qué dispositivos esenciales están apagados y podrían necesitar encenderse
-SELECT '=== DISPOSITIVOS ESENCIALES APAGADOS (CRÍTICOS) ===' as '';
-SELECT d.nombre, 
-       'APAGADO' as estado,
-       'REVISAR URGENTE' as accion
-FROM dispositivos d
-WHERE d.es_esencial = TRUE AND d.estado = 0;
-
--- CONSULTA MULTITABLA 2: Resumen estadístico del sistema
--- Propósito: Dashboard con métricas clave del sistema
--- Justificación: Para administradores que necesitan ver el estado general
-SELECT '=== RESUMEN ESTADÍSTICO DEL SISTEMA ===' as '';
-SELECT 
-    'Total Usuarios' as metricas,
-    (SELECT COUNT(*) FROM usuarios) as valor
-UNION ALL
-SELECT 
-    'Administradores',
-    (SELECT COUNT(*) FROM usuarios WHERE es_admin = TRUE)
-UNION ALL
-SELECT 
-    'Total Dispositivos', 
-    (SELECT COUNT(*) FROM dispositivos)
-UNION ALL
-SELECT 
-    'Dispositivos Esenciales',
-    (SELECT COUNT(*) FROM dispositivos WHERE es_esencial = TRUE)
-UNION ALL
-SELECT 
-    'Dispositivos Encendidos',
-    (SELECT COUNT(*) FROM dispositivos WHERE estado = 1)
-UNION ALL
-SELECT 
-    'Eficiencia Energética',
-    CONCAT(ROUND((SELECT COUNT(*) FROM dispositivos WHERE estado = 0) * 100.0 / 
-          (SELECT COUNT(*) FROM dispositivos), 1), '%');
-
---  CONSULTA MULTITABLA 3: Dispositivos no esenciales encendidos
--- Propósito: Identificar oportunidades de ahorro energético
--- Justificación: Para el modo de ahorro, apagar estos dispositivos reduce consumo
-SELECT '=== DISPOSITIVOS NO ESENCIALES ENCENDIDOS (OPORTUNIDAD DE AHORRO) ===' as '';
-SELECT d.nombre,
-       'CONSUMIENDO ENERGÍA' as situacion,
-       'CONSIDERAR APAGAR' as recomendacion
-FROM dispositivos d
-WHERE d.es_esencial = FALSE AND d.estado = 1;
-
---  CONSULTA MULTITABLA 4: Análisis de eficiencia energética
--- Propósito: Reporte de eficiencia para toma de decisiones
--- Justificación: Los administradores necesitan métricas de eficiencia
-SELECT '=== ANÁLISIS DE EFICIENCIA ENERGÉTICA ===' as '';
-SELECT 
-    'Dispositivos Esenciales' as categoria,
-    COUNT(*) as total,
-    SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) as encendidos,
-    ROUND(SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as porcentaje_encendidos
-FROM dispositivos WHERE es_esencial = TRUE
-UNION ALL
-SELECT 
-    'Dispositivos No Esenciales',
-    COUNT(*),
-    SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END),
-    ROUND(SUM(CASE WHEN estado = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2)
-FROM dispositivos WHERE es_esencial = FALSE;
-
 -- =============================================
--- 4. SUBCONSULTAS (2 subconsultas útiles)
+-- 5. SUBCONSULTAS (2 SUBCONSULTAS)
 -- =============================================
 
 -- SUBCONSULTA 1: Dispositivos con estado superior al promedio
--- Propósito: Identificar dispositivos que consumen más energía de lo normal
--- Justificación: Para optimizar el consumo energético del hogar
 SELECT '=== DISPOSITIVOS CON ESTADO SUPERIOR AL PROMEDIO ===' as '';
 SELECT nombre, 
        estado,
@@ -174,14 +176,12 @@ FROM dispositivos
 WHERE estado > (
     SELECT AVG(estado) 
     FROM dispositivos
-    WHERE es_esencial = FALSE  -- Solo considerar no esenciales para el promedio
+    WHERE es_esencial = FALSE
 )
 AND es_esencial = FALSE
 ORDER BY estado DESC;
 
 -- SUBCONSULTA 2: Dispositivos esenciales que siempre deben estar encendidos
--- Propósito: Verificar dispositivos críticos que deberían estar activos
--- Justificación: Seguridad del hogar - algunos dispositivos son críticos
 SELECT '=== DISPOSITIVOS CRÍTICOS QUE DEBEN ESTAR ACTIVOS ===' as '';
 SELECT nombre, 
        CASE WHEN estado = 1 THEN 'CORRECTO' ELSE 'REVISAR URGENTE' END as estado_actual,
@@ -195,13 +195,13 @@ AND nombre IN (
 );
 
 -- =============================================
--- CONSULTA EXTRA: Reporte ejecutivo consolidado
+-- 6. REPORTE EJECUTIVO CON DATOS RELACIONALES
 -- =============================================
 
-SELECT '===  REPORTE EJECUTIVO - SISTEMA SMART HOME ===' as '';
+SELECT '=== REPORTE EJECUTIVO - SISTEMA SMART HOME RELACIONAL ===' as '';
 SELECT 
     'Estado del Sistema' as seccion,
-    'ÓPTIMO' as resultado
+    'BASE DE DATOS RELACIONAL ACTIVA' as resultado
 UNION ALL
 SELECT 
     'Usuarios Registrados',
@@ -212,17 +212,21 @@ SELECT
     CONCAT((SELECT COUNT(*) FROM dispositivos WHERE estado = 1), '/', (SELECT COUNT(*) FROM dispositivos), ' encendidos')
 UNION ALL
 SELECT 
-    'Eficiencia Energética',
-    CONCAT(ROUND((SELECT COUNT(*) FROM dispositivos WHERE estado = 0) * 100.0 / 
-          (SELECT COUNT(*) FROM dispositivos), 1), '% de ahorro potencial');
+    'Relaciones Usuario-Dispositivo',
+    CONCAT((SELECT COUNT(*) FROM usuario_dispositivo), ' asignaciones activas')
+UNION ALL
+SELECT 
+    'Promedio Dispositivos por Usuario',
+    CONCAT(ROUND((SELECT COUNT(*) FROM usuario_dispositivo) * 1.0 / (SELECT COUNT(*) FROM usuarios), 1), ' dispositivos/usuario');
 
 -- =============================================
--- ✅ RESUMEN FINAL
+-- ✅ RESUMEN FINAL - BASE DE DATOS RELACIONAL
 -- =============================================
 
-SELECT 'SCRIPT EJECUTADO EXITOSAMENTE' as '';
-SELECT 'Resumen final:' as '';
+SELECT 'SCRIPT DE BASE DE DATOS RELACIONAL EJECUTADO EXITOSAMENTE' as '';
+SELECT 'Resumen final del sistema relacional:' as '';
 SELECT 
     (SELECT COUNT(*) FROM usuarios) as total_usuarios,
     (SELECT COUNT(*) FROM dispositivos) as total_dispositivos,
-    (SELECT COUNT(*) FROM (SELECT 1 FROM usuarios UNION SELECT 1 FROM dispositivos) as t) as total_registros;
+    (SELECT COUNT(*) FROM usuario_dispositivo) as total_relaciones,
+    (SELECT COUNT(*) FROM (SELECT 1 FROM usuarios UNION SELECT 1 FROM dispositivos UNION SELECT 1 FROM usuario_dispositivo) as t) as total_registros;
