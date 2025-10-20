@@ -15,7 +15,7 @@ def menu_principal():
 def menu_usuario_estandar(usuario_actual, usuario_dao, dispositivo_dao):
     """Menú para usuarios estándar - Ahora con gestión completa de dispositivos"""
     while True:
-        print(f"\n--- Bienvenido {usuario_actual._nombre} ---")
+        print(f"\n--- Bienvenido {usuario_actual.nombre} ---")
         print("1. Ver mis datos")
         print("2. Gestionar dispositivos")
         print("0. Cerrar sesión")
@@ -83,20 +83,21 @@ def gestionar_dispositivos(dispositivo_dao):
 
 def ver_dispositivos(dispositivo_dao):
     """Mostrar todos los dispositivos"""
-    dispositivos = dispositivo_dao.obtener_todos()
+    dispositivos_rows = dispositivo_dao.obtener_todos()  # Ahora son tuplas
     
-    if not dispositivos:
+    if not dispositivos_rows:
         print("\nNo hay dispositivos registrados")
         return
     
-    print(f"\n--- Dispositivos ({len(dispositivos)}) ---")
-    for i, dispositivo in enumerate(dispositivos, 1):
-        estado = "🟢 ENCENDIDO" if dispositivo.revisar_estado() == "encendido" else "🔴 APAGADO"
-        tipo = "ESENCIAL" if dispositivo._es_esencial else "Normal"
-        print(f"{i}. {dispositivo.nombre} | {estado} | Tipo: {tipo}")
+    print(f"\n--- Dispositivos ({len(dispositivos_rows)}) ---")
+    for i, fila in enumerate(dispositivos_rows, 1):
+        # fila = (nombre, estado, es_esencial)
+        estado = "🟢 ENCENDIDO" if fila[1] == 1 else "🔴 APAGADO"
+        tipo = "ESENCIAL" if fila[2] else "Normal"
+        print(f"{i}. {fila[0]} | {estado} | Tipo: {tipo}")
 
 def agregar_dispositivo(dispositivo_dao):
-    """Agregar nuevo dispositivo - Accesible para todos los usuarios"""
+    """Agregar nuevo dispositivo"""
     print("\n--- AGREGAR DISPOSITIVO ---")
     nombre = input("Nombre del dispositivo: ").strip()
     
@@ -104,7 +105,7 @@ def agregar_dispositivo(dispositivo_dao):
         print("❌ El nombre no puede estar vacío")
         return
     
-    # Validar si ya existe
+    # CAMBIO: Verificar existencia con tupla
     existente = dispositivo_dao.obtener_por_nombre(nombre)
     if existente:
         print("❌ El dispositivo ya existe")
@@ -130,11 +131,11 @@ def agregar_dispositivo(dispositivo_dao):
         print(f"❌ Error al crear dispositivo: {e}")
 
 def eliminar_dispositivo(dispositivo_dao):
-    """Eliminar dispositivo existente - Accesible para todos los usuarios"""
+    """Eliminar dispositivo existente"""
     print("\n--- ELIMINAR DISPOSITIVO ---")
-    dispositivos = dispositivo_dao.obtener_todos()
+    dispositivos_rows = dispositivo_dao.obtener_todos()  # Tuplas
     
-    if not dispositivos:
+    if not dispositivos_rows:
         print("No hay dispositivos para eliminar")
         return
     
@@ -142,13 +143,13 @@ def eliminar_dispositivo(dispositivo_dao):
     
     try:
         seleccion = int(input("\nSeleccione dispositivo a eliminar (número): ")) - 1
-        if 0 <= seleccion < len(dispositivos):
-            dispositivo = dispositivos[seleccion]
+        if 0 <= seleccion < len(dispositivos_rows):
+            dispositivo_nombre = dispositivos_rows[seleccion][0]  # fila[0] = nombre
             
             # Confirmar eliminación
-            confirmar = input(f"¿Está seguro de eliminar '{dispositivo.nombre}'? (s/n): ").lower()
+            confirmar = input(f"¿Está seguro de eliminar '{dispositivo_nombre}'? (s/n): ").lower()
             if confirmar == 's':
-                if dispositivo_dao.eliminar(dispositivo.nombre):
+                if dispositivo_dao.eliminar(dispositivo_nombre):
                     print("✅ Dispositivo eliminado")
                 else:
                     print("❌ Error al eliminar")
@@ -160,11 +161,11 @@ def eliminar_dispositivo(dispositivo_dao):
         print("❌ Ingrese un número válido")
 
 def modificar_estado_dispositivo(dispositivo_dao):
-    """Cambiar estado de dispositivo - Accesible para todos los usuarios"""
+    """Cambiar estado de dispositivo"""
     print("\n--- MODIFICAR ESTADO ---")
-    dispositivos = dispositivo_dao.obtener_todos()
+    dispositivos_rows = dispositivo_dao.obtener_todos()  # Tuplas
     
-    if not dispositivos:
+    if not dispositivos_rows:
         print("No hay dispositivos")
         return
     
@@ -172,16 +173,17 @@ def modificar_estado_dispositivo(dispositivo_dao):
     
     try:
         seleccion = int(input("\nSeleccione dispositivo (número): ")) - 1
-        if 0 <= seleccion < len(dispositivos):
-            dispositivo = dispositivos[seleccion]
+        if 0 <= seleccion < len(dispositivos_rows):
+            dispositivo_nombre = dispositivos_rows[seleccion][0]  # fila[0] = nombre
+            estado_actual = dispositivos_rows[seleccion][1]  # fila[1] = estado
             
-            print(f"\nDispositivo: {dispositivo.nombre}")
-            print(f"Estado actual: {dispositivo.revisar_estado()}")
+            print(f"\nDispositivo: {dispositivo_nombre}")
+            print(f"Estado actual: {'encendido' if estado_actual == 1 else 'apagado'}")
             
             while True:
                 nuevo_estado = input("Nuevo estado (1=encender, 0=apagar): ")
                 if nuevo_estado in ['0', '1']:
-                    if dispositivo_dao.actualizar_estado(dispositivo.nombre, int(nuevo_estado)):
+                    if dispositivo_dao.actualizar_estado(dispositivo_nombre, int(nuevo_estado)):
                         print("✅ Estado actualizado")
                     else:
                         print("❌ Error al actualizar")
@@ -213,23 +215,24 @@ def gestionar_usuarios(usuario_dao):
             print("❌ Opción inválida")
 
 def ver_usuarios(usuario_dao):
-    """Mostrar todos los usuarios - SOLO para administradores"""
-    usuarios = usuario_dao.obtener_todos()
+    """Mostrar todos los usuarios"""
+    usuarios_rows = usuario_dao.obtener_todos()  # Ahora son tuplas
     
-    if not usuarios:
+    if not usuarios_rows:
         print("\nNo hay usuarios registrados")
         return
     
     print("\n--- USUARIOS REGISTRADOS ---")
-    for i, usuario in enumerate(usuarios, 1):
-        rol = "👑 Administrador" if usuario._es_admin else "👤 Usuario Estándar"
-        print(f"{i}. {usuario._nombre} - {rol}")
+    for i, fila in enumerate(usuarios_rows, 1):
+        # fila = (nombre, contraseña, es_admin)
+        rol = "👑 Administrador" if fila[2] else "👤 Usuario Estándar"
+        print(f"{i}. {fila[0]} - {rol}")
 
 def cambiar_rol_usuario(usuario_dao):
-    """Cambiar rol de usuario entre admin y usuario estándar - SOLO para administradores"""
-    usuarios = usuario_dao.obtener_todos()
+    """Cambiar rol de usuario"""
+    usuarios_rows = usuario_dao.obtener_todos()  # Tuplas
     
-    if not usuarios:
+    if not usuarios_rows:
         print("No hay usuarios registrados")
         return
     
@@ -238,14 +241,14 @@ def cambiar_rol_usuario(usuario_dao):
     
     try:
         seleccion = int(input("\nSeleccione usuario (número): ")) - 1
-        if 0 <= seleccion < len(usuarios):
-            usuario = usuarios[seleccion]
+        if 0 <= seleccion < len(usuarios_rows):
+            usuario_nombre = usuarios_rows[seleccion][0]  # fila[0] = nombre
             
             nuevo_rol_input = input("¿Hacer administrador? (s/n): ").lower()
             if nuevo_rol_input in ['s', 'n']:
                 nuevo_rol = (nuevo_rol_input == 's')
                 
-                if usuario_dao.actualizar_rol(usuario._nombre, nuevo_rol):
+                if usuario_dao.actualizar_rol(usuario_nombre, nuevo_rol):
                     print("✅ Rol actualizado correctamente")
                 else:
                     print("❌ Error al actualizar rol")
@@ -277,14 +280,18 @@ def main():
                     print("❌ El usuario no puede estar vacío")
                     continue
                 
-                usuario = usuario_dao.obtener_por_nombre(nombre)
-                if usuario and usuario.iniciar_sesion(nombre, contraseña):
+                # CAMBIO: Obtener tupla en vez de objeto
+                fila = usuario_dao.obtener_por_nombre(nombre)
+                if fila and fila[2] == contraseña:  # fila[2] = contraseña
                     print("✅ ¡Inicio de sesión exitoso!")
                     
-                    if usuario._es_admin:
-                        menu_admin(usuario, usuario_dao, dispositivo_dao)
+                    # Crear objeto usuario para compatibilidad con menús
+                    usuario_obj = Usuario(fila[1], fila[2], bool(fila[3]))
+                    
+                    if bool(fila[3]):  # fila[3] = es_admin
+                        menu_admin(usuario_obj, usuario_dao, dispositivo_dao)
                     else:
-                        menu_usuario_estandar(usuario, usuario_dao, dispositivo_dao)
+                        menu_usuario_estandar(usuario_obj, usuario_dao, dispositivo_dao)
                 else:
                     print("❌ Credenciales incorrectas")
             
@@ -300,11 +307,17 @@ def main():
                     print("❌ La contraseña debe tener al menos 3 caracteres")
                     continue
                 
+                # CAMBIO: Verificar si usuario existe usando tupla
+                existente = usuario_dao.obtener_por_nombre(nombre)
+                if existente:
+                    print("❌ El usuario ya existe")
+                    continue
+                
                 nuevo_usuario = Usuario(nombre, contraseña, False)
                 if usuario_dao.guardar(nuevo_usuario):
                     print("✅ ¡Usuario registrado exitosamente!")
                 else:
-                    print("❌ El usuario ya existe")
+                    print("❌ Error al registrar usuario")
             
             elif opcion == "0":
                 print("Adios")

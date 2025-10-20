@@ -2,7 +2,7 @@ class Dispositivo:
     def __init__(self, nombre: str, es_esencial: bool = False):
         self.nombre = nombre
         self._estado = 0  # 0 = apagado, 1 = encendido
-        self._es_esencial = es_esencial
+        self.es_esencial = es_esencial
 
     def encender(self):
         self._estado = 1
