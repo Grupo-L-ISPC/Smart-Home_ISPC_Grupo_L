@@ -2,6 +2,7 @@
 from conn.database import obtener_conexion
 from dao.usuarios_dao import UsuarioDAO
 from dao.dispositivo_dao import DispositivoDAO
+from dao.relacion_dao import RelacionDAO
 from dominio.dispositivo import Dispositivo
 from dominio.usuario import Usuario
 
@@ -95,6 +96,23 @@ def ver_dispositivos(dispositivo_dao):
         estado = "🟢 ENCENDIDO" if fila[1] == 1 else "🔴 APAGADO"
         tipo = "ESENCIAL" if fila[2] else "Normal"
         print(f"{i}. {fila[0]} | {estado} | Tipo: {tipo}")
+
+def ver_mis_dispositivos(usuario_actual, relacion_dao, usuario_dao):
+    """Muestra los dispositivos asignados al usuario actual (CONSULTA MULTITABLA REAL)"""
+    usuario_id = usuario_dao.obtener_id_por_nombre(usuario_actual.nombre)
+    if usuario_id:
+        dispositivos = relacion_dao.obtener_dispositivos_por_usuario(usuario_id)
+        print(f"\n--- TUS DISPOSITIVOS ASIGNADOS ({len(dispositivos)}) ---")
+        if dispositivos:
+            for disp in dispositivos:
+                # disp = (id, nombre, estado, es_esencial)
+                estado = "🟢 ENCENDIDO" if disp[2] == 1 else "🔴 APAGADO"
+                tipo = "ESENCIAL" if disp[3] else "Normal"
+                print(f"- {disp[1]} | {estado} | {tipo}")
+        else:
+            print("No tienes dispositivos asignados")
+    else:
+        print("❌ Error obteniendo datos del usuario")
 
 def agregar_dispositivo(dispositivo_dao):
     """Agregar nuevo dispositivo"""
@@ -265,6 +283,7 @@ def main():
         conexion = obtener_conexion()
         usuario_dao = UsuarioDAO(conexion)
         dispositivo_dao = DispositivoDAO(conexion)
+        relacion_dao = RelacionDAO(conexion)
         
         print("🔌 Conectado a la base de datos")
         
@@ -288,9 +307,9 @@ def main():
                     usuario_obj = Usuario(fila[1], fila[2], bool(fila[3]))
                     
                     if bool(fila[3]):  # fila[3] = es_admin
-                        menu_admin(usuario_obj, usuario_dao, dispositivo_dao)
+                        menu_admin(usuario_obj, usuario_dao, dispositivo_dao, relacion_dao)  
                     else:
-                        menu_usuario_estandar(usuario_obj, usuario_dao, dispositivo_dao)
+                        menu_usuario_estandar(usuario_obj, usuario_dao, dispositivo_dao, relacion_dao)
                 else:
                     print("❌ Credenciales incorrectas")
             
