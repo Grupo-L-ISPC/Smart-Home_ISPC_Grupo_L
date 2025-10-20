@@ -39,8 +39,23 @@ def crear_tablas():
             )
         ''')
         print("✅ Tabla 'dispositivos' creada/verificada")
+
+        #5. Creacion de tabla intermedia
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS usuario_dispositivo (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id INT NOT NULL,
+                dispositivo_id INT NOT NULL,
+                fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+                FOREIGN KEY (dispositivo_id) REFERENCES dispositivos(id) ON DELETE CASCADE,
+                UNIQUE KEY unique_usuario_dispositivo (usuario_id, dispositivo_id)
+            )
+        ''')
+        print("✅ Tabla 'usuario_dispositivo' creada/verificada")
         
-        # 5. Insertar usuario admin por defecto
+        # 6. Insertar usuario admin por defecto
         try:
             cursor.execute(
                 "INSERT INTO usuarios (nombre, contraseña, es_admin) VALUES (%s, %s, %s)",
