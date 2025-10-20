@@ -1,22 +1,6 @@
 # conn/database.py
 import mysql.connector
 
-def obtener_conexion():
-    """Crea y devuelve una conexión a MySQL"""
-    try:
-
-        conexion = mysql.connector.connect(
-            host="localhost",
-            user="root", 
-            password="sql1234T",  
-            database="mysql"  
-        )
-        print("✅ Conexión a MySQL exitosa")
-        return conexion
-    except mysql.connector.Error as err:
-        print(f"❌ Error conectando a MySQL: {err}")
-        return None
-
 def crear_tablas():
     """Crea la base de datos y tablas necesarias"""
     conexion = obtener_conexion()
@@ -77,7 +61,7 @@ def crear_tablas():
         conexion.close()
 
 # funcion q se conecta a smarthome
-def obtener_conexion_smarthome():
+def obtener_conexion():
     """Crea y devuelve una conexión a la base de datos smarthome"""
     try:
         conexion = mysql.connector.connect(
