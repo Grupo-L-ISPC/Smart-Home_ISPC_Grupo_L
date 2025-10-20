@@ -1,5 +1,5 @@
 # main.py
-from conn.database import obtener_conexion_smarthome
+from conn.database import obtener_conexion
 from dao.usuarios_dao import UsuarioDAO
 from dao.dispositivo_dao import DispositivoDAO
 from dominio.dispositivo import Dispositivo
@@ -259,7 +259,7 @@ def cambiar_rol_usuario(usuario_dao):
 def main():
     """Función principal del programa"""
     try:
-        conexion = obtener_conexion_smarthome()
+        conexion = obtener_conexion()
         usuario_dao = UsuarioDAO(conexion)
         dispositivo_dao = DispositivoDAO(conexion)
         
