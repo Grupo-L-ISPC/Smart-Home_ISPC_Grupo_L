@@ -280,7 +280,6 @@ def main():
                     print("❌ El usuario no puede estar vacío")
                     continue
                 
-                # CAMBIO: Obtener tupla en vez de objeto
                 fila = usuario_dao.obtener_por_nombre(nombre)
                 if fila and fila[2] == contraseña:  # fila[2] = contraseña
                     print("✅ ¡Inicio de sesión exitoso!")
